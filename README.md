@@ -1,6 +1,6 @@
 # AI Architect Toolkit
 
-Project-neutral Codex skills for turning stakeholder needs into traceable architecture and implementation-ready tasks.
+A reusable set of Codex skills for software architects, with a focus on AI architecture. It turns stakeholder needs into traceable business and architecture documentation and implementation-ready tasks.
 
 ## Lifecycle
 
@@ -11,7 +11,7 @@ Idea -> Use case -> Business Design Record -> Architecture Design Document
      -> Implementation-ready task -> Implementation -> Conformance review
 ```
 
-Each artifact remains evidence-backed. The toolkit distinguishes confirmed facts, assumptions, items to verify, and unknowns; it never invents approvals.
+The C4 capability supports system context, container, component, dynamic, deployment, integration, and regulated-data-flow views. Each artifact remains evidence-backed. The toolkit distinguishes confirmed facts, assumptions, items to verify, and unknowns; it never invents approvals.
 
 ## Skills
 
@@ -19,10 +19,10 @@ Each artifact remains evidence-backed. The toolkit distinguishes confirmed facts
 |---|---|
 | `idea-task` | Validated idea draft |
 | `generate-use-case` | `UC-NNN` |
-| `generate-bdr` | `BDR-NNN` |
-| `generate-add` | `ADD-NNN` |
+| `generate-bdr` | `BDR-NNN` business requirements and design |
+| `generate-add` | `ADD-NNN` architecture design |
 | `generate-c4` | Source, rendering, and evidence for a C4 view |
-| `generate-adr` | `ADR-NNN` |
+| `generate-adr` | `ADR-NNN` architecture decision record |
 | `prepare-task` | Implementation-ready task specification |
 | `review-architecture-conformance` | `ACR-NNN` or an in-chat review |
 | `architecture-change` | End-to-end coordination and traceability |
