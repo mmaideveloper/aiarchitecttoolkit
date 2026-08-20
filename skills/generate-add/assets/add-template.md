@@ -7,7 +7,7 @@
 - Owner: <owner or Unknown>
 - Date: <YYYY-MM-DD>
 - Related use cases: <UC links>
-- Related business design: <BDR links or Not applicable with reason>
+- Related business decisions: <BDR links or Not applicable with reason>
 - Related diagrams: <C4 links or To create>
 - Related decisions: <ADR links or None>
 

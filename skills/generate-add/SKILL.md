@@ -1,6 +1,6 @@
 ---
 name: generate-add
-description: Create, update, and review a source-backed Architecture Design Document (ADD) from reviewed use cases, applicable Business Design Records, repository evidence, constraints, quality attributes, C4 views, and ADRs. Use when a change needs an overall technical design, an ADD reference must be revised, or implementation readiness must be assessed without writing code.
+description: Create, update, and review a source-backed Architecture Design Document (ADD) from reviewed use cases, applicable Business Decision Records, repository evidence, constraints, quality attributes, C4 views, and ADRs. Use when a change needs an overall technical design, an ADD reference must be revised, or implementation readiness must be assessed without writing code.
 ---
 
 # Generate ADD

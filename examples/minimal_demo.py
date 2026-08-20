@@ -2,6 +2,9 @@
 
 from pathlib import Path
 import re
+import subprocess
+import sys
+import tempfile
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -36,7 +39,29 @@ def main() -> None:
             if not (skill_file.parent / relative_link).resolve().exists():
                 raise SystemExit(f"Broken link in {skill_name}: {relative_link}")
 
-    print(f"Validated {len(REQUIRED_SKILLS)} architecture skills.")
+    with tempfile.TemporaryDirectory() as temporary_directory:
+        architecture = Path(temporary_directory) / "architecture"
+        decisions = architecture / "business-decisions"
+        decisions.mkdir(parents=True)
+        (architecture / "index.md").write_text(
+            "# Traceability\n\n- [BDR-001](business-decisions/BDR-001-adopt-toolkit.md)\n",
+            encoding="utf-8",
+        )
+        (decisions / "BDR-001-adopt-toolkit.md").write_text(
+            "# BDR-001: Adopt the toolkit\n\n- Status: Proposed\n",
+            encoding="utf-8",
+        )
+        validator = ROOT / "scripts" / "validate_architecture.py"
+        result = subprocess.run(
+            [sys.executable, str(validator), str(architecture)],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        if result.returncode:
+            raise SystemExit(result.stdout or result.stderr)
+
+    print(f"Validated {len(REQUIRED_SKILLS)} architecture skills and artifact traceability.")
 
 
 if __name__ == "__main__":

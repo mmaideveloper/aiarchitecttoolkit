@@ -1,6 +1,6 @@
 ---
 name: review-architecture-conformance
-description: Review an implementation, code change, pull request, or deployed design against linked use cases, Business Design Records, approved ADDs, C4 views, accepted ADRs, quality attributes, and applicable governance safeguards. Use when checking architecture conformance, identifying undocumented drift, assessing stale artifacts, or producing an Architecture Conformance Review (ACR); do not use it to approve or rewrite decisions automatically.
+description: Review an implementation, code change, pull request, or deployed design against linked use cases, Business Decision Records, approved ADDs, C4 views, accepted ADRs, quality attributes, and applicable governance safeguards. Use when checking architecture conformance, identifying undocumented drift, assessing stale artifacts, or producing an Architecture Conformance Review (ACR); do not use it to approve or rewrite decisions automatically.
 ---
 
 # Review Architecture Conformance

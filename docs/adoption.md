@@ -33,6 +33,8 @@ Prefer profiles and repository instructions over forked skills. Fork a core skil
 
 Compare complete skill directories, review contract changes, rerun the target repository's checks, and validate the adopted skills with Codex `skill-creator`. Do not overwrite local customizations without reviewing them.
 
+Run `python scripts/validate_architecture.py architecture` in the adopting project to detect duplicate identifiers, invalid lifecycle states, unknown artifact references, broken relative links, and a missing traceability index.
+
 ## Future plugin
 
 Plugin packaging should add discovery metadata around these unchanged source skills. It should not embed organization secrets or make a domain profile mandatory for unrelated projects.

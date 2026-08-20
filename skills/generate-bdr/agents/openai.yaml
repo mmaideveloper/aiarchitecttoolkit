@@ -1,4 +1,4 @@
 interface:
-  display_name: "Generate Business Design Record"
-  short_description: "Create traceable business design records"
-  default_prompt: "Use $generate-bdr to create a source-backed Business Design Record from reviewed use cases and stakeholder evidence."
+  display_name: "Generate Business Decision Record"
+  short_description: "Record traceable business decisions"
+  default_prompt: "Use $generate-bdr to compare options and create a source-backed Business Decision Record."

@@ -5,7 +5,7 @@ project:
 artifacts:
   root: architecture
   use_cases: use-cases
-  business_design: business
+  business_decisions: business-decisions
   design: design
   diagrams: diagrams
   decisions: decisions
