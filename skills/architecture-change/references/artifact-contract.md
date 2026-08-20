@@ -5,7 +5,7 @@ Use stable identifiers and repository-relative links. Map paths through `archite
 | Artifact | Identifier | Default path | Lifecycle |
 |---|---|---|---|
 | Use case | `UC-NNN` | `architecture/use-cases/UC-NNN-<slug>.md` | Draft, Reviewed, Approved, Retired |
-| Business Design Record | `BDR-NNN` | `architecture/business/BDR-NNN-<slug>.md` | Draft, In Review, Approved, Superseded |
+| Business Decision Record | `BDR-NNN` | `architecture/business-decisions/BDR-NNN-<slug>.md` | Proposed, Accepted, Rejected, Superseded |
 | Architecture Design Document | `ADD-NNN` | `architecture/design/ADD-NNN-<slug>.md` | Draft, In Review, Approved, Superseded |
 | C4 view | `<system>-<state>-<view>` | `architecture/diagrams/<system>/` | Conceptual, Current, Transition, Target |
 | Decision | `ADR-NNN` | `architecture/decisions/ADR-NNN-<slug>.md` | Proposed, Accepted, Rejected, Deprecated, Superseded |

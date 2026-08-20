@@ -1,6 +1,6 @@
 ---
 name: architecture-change
-description: Coordinate a traceable architecture change from an idea or stakeholder use case through Business Design Records, Architecture Design Documents, C4 views, Architecture Decision Records, implementation-ready tasks, and post-implementation conformance review. Use when starting, governing, assessing, or continuing a significant architecture change from any artifact reference.
+description: Coordinate a traceable architecture change from an idea or stakeholder use case through Business Decision Records, Architecture Design Documents, C4 views, Architecture Decision Records, implementation-ready tasks, and post-implementation conformance review. Use when starting, governing, assessing, or continuing a significant architecture change from any artifact reference.
 ---
 
 # Architecture Change
@@ -12,8 +12,8 @@ Coordinate the lifecycle and use focused skills to author artifacts.
 1. Read `AGENTS.md`, `architecture/toolkit-profile.yaml` when present, repository sources, existing artifacts, and stakeholder evidence.
 2. Resolve the starting point and change slug. Do not recreate an artifact already supplied by reference.
 3. Use `$idea-task` only when the problem or intended outcome is still ambiguous.
-4. Use `$generate-use-case`; require `Reviewed` before business or architecture baselining.
-5. Use `$generate-bdr` when business capabilities, operating model, value, policy, ownership, or decision rights materially constrain the design. Require a reviewed BDR before architecture baselining when applicable.
+4. Use `$generate-bdr` before or alongside use-case discovery when an authoritative business choice is required. An accepted BDR may authorize or constrain multiple use cases.
+5. Use `$generate-use-case`; require `Reviewed` before architecture baselining.
 6. Use `$generate-add` from reviewed upstream artifacts and source evidence.
 7. Use `$generate-c4` only for views that answer concrete stakeholder questions.
 8. Use `$generate-adr` once per independently changeable decision.

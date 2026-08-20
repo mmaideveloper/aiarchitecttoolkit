@@ -5,9 +5,8 @@ A reusable set of Codex skills for software architects, with a focus on AI archi
 ## Lifecycle
 
 ```text
-Idea -> Use case -> Business Design Record -> Architecture Design Document
-                                      |-> C4 views
-                                      |-> Architecture Decision Records
+Idea -> optional Business Decision Record -> Use case
+     -> Architecture Design Document -> necessary C4 views and ADRs
      -> Implementation-ready task -> Implementation -> Conformance review
 ```
 
@@ -19,7 +18,7 @@ The C4 capability supports system context, container, component, dynamic, deploy
 |---|---|
 | `idea-task` | Validated idea draft |
 | `generate-use-case` | `UC-NNN` |
-| `generate-bdr` | `BDR-NNN` business requirements and design |
+| `generate-bdr` | `BDR-NNN` business decision record |
 | `generate-add` | `ADD-NNN` architecture design |
 | `generate-c4` | Source, rendering, and evidence for a C4 view |
 | `generate-adr` | `ADR-NNN` architecture decision record |
@@ -47,6 +46,12 @@ python examples/minimal_demo.py
 ```
 
 For Codex schema validation, run `quick_validate.py` from the installed `skill-creator` skill against every directory under `skills/`.
+
+Validate a project's architecture identifiers, lifecycle states, artifact references, and relative links with:
+
+```powershell
+python scripts/validate_architecture.py <project>/architecture
+```
 
 ## Packaging status
 

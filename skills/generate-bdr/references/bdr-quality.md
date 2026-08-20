@@ -1,12 +1,11 @@
-# Business Design Record quality gate
+# Business Decision Record quality gate
 
-- Reviewed use cases and stakeholder sources are linked.
-- The problem, intended value, scope, non-goals, and measurable outcomes are explicit.
-- Current, target, and transition states are not mixed.
-- Capability, process, role, ownership, policy, information, and operating-model impacts are covered where applicable.
-- Business facts are separated from proposals and assumptions.
-- Technical implementation is limited to confirmed constraints and architecture drivers.
-- Human decisions, automation boundaries, exceptions, and escalation are visible.
+- The source idea, affected use cases when known, and stakeholder evidence are linked.
+- The problem, decision scope, non-goals, urgency, and measurable outcomes are explicit.
+- Viable options are compared against the same sourced decision drivers.
+- The selected option and rejection rationale are precise, or the record says `Not yet decided`.
+- Business facts are separated from proposals, assumptions, and unknowns.
+- Consequences include costs, benefits, risks, reversibility, and review triggers without invented values.
 - Applicable privacy, AI, security, accessibility, safety, and sector obligations are assessed without inferred classifications.
 - Architecture constraints are traceable and testable.
 - Risks, open questions, owners, and approval evidence are explicit.

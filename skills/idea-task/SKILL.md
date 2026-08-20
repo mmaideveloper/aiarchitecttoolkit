@@ -35,12 +35,17 @@ Works in VS Code, Codex Web, and Codex Desktop repository chat.
    - risks and technical debt hotspots
    - observability, logging, and rollback expectations
    - compliance notes
-7. Decide status:
+7. Classify the next route:
+   - ordinary/local change: `$prepare-task`
+   - new or changed user/business behavior: `$generate-use-case`
+   - material business choice: `$generate-bdr`
+   - cross-component, data-flow, deployment, or quality-attribute change: `$architecture-change`
+8. Decide status:
    - `Ready for prepare-task`
    - `Blocked` (with reasons)
-8. Emit exact marker line for downstream automations:
+9. Emit exact marker line for downstream automations:
    - `Idea Task Status: Ready for prepare-task.` when ready.
-9. If ready, recommend running `$prepare-task` with the generated draft or task URL.
+10. If ready, recommend the classified next route instead of always defaulting to `$prepare-task`.
 
 ## Question Priorities
 

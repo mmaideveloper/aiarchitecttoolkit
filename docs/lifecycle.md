@@ -5,8 +5,8 @@
 | Stage | Required evidence | Exit gate |
 |---|---|---|
 | Idea | Problem, outcome, scope direction | Material ambiguity is recorded or resolved |
+| Business decision | Business problem, options, selected direction, success measures, authority | The decision is evidenced; skip rationale exists if no business choice is needed |
 | Use case | Actors, flows, requirements, acceptance criteria | Stakeholder review is evidenced |
-| Business design | Capabilities, processes, roles, policy, value, ownership | Business constraints are reviewed; skip rationale exists if not applicable |
 | Architecture design | Context, responsibilities, data, interfaces, quality attributes, operations | Blocking unknowns are closed and required decisions are identified |
 | C4 and ADR | Evidence-backed views and independently changeable decisions | Binding decisions are accepted by an evidenced authority |
 | Task preparation | Small deliverable scope and verification | Acceptance is testable and safeguards are included |
@@ -18,7 +18,7 @@ Every artifact links upstream sources and known downstream consumers. A task sho
 
 ## BDR applicability
 
-Create a BDR when a change materially affects business capability, process, role, decision right, policy, value, ownership, information governance, service expectation, or operating model. If none apply, record a short reason and proceed from reviewed use cases to the ADD.
+Create a BDR when an idea requires an authoritative business choice, such as build versus buy, product scope, target users, investment priority, operating ownership, risk acceptance, or a policy direction. A BDR can authorize or constrain later use cases. If no material business choice exists, record a short reason and proceed without one.
 
 ## Governance
 

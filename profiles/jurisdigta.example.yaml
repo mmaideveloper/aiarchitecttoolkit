@@ -4,6 +4,7 @@ project:
   domain: legal-ai
 artifacts:
   root: architecture
+  business_decisions: business-decisions
 governance:
   privacy: GDPR
   ai_regulation: EU AI Act

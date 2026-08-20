@@ -1,6 +1,6 @@
 ---
 name: prepare-task
-description: Convert a shaped idea or approved architecture slice into an implementation-ready task specification, preserving traceability to use cases, Business Design Records, Architecture Design Documents, C4 views, ADRs, governance controls, and acceptance evidence. Use when preparing or reviewing a task for any repository or task system; create or update an external task only when the user authorizes that write.
+description: Convert a shaped idea or approved architecture slice into an implementation-ready task specification, preserving traceability to use cases, Business Decision Records, Architecture Design Documents, C4 views, ADRs, governance controls, and acceptance evidence. Use when preparing or reviewing a task for any repository or task system; create or update an external task only when the user authorizes that write.
 ---
 
 # Prepare Task
