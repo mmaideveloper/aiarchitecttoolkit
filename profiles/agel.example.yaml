@@ -1,0 +1,17 @@
+schema_version: 1
+project:
+  name: AGEL
+  domain: healthcare
+artifacts:
+  root: architecture
+governance:
+  privacy: GDPR
+  ai_regulation: applicability-to-confirm
+  safety: clinical-safety-assessment-required
+  approval_authorities: []
+task_management:
+  provider: repository-defined
+  ready_status: Ready
+notes:
+  - Never infer patient-data classification, clinical approval, or architecture-board approval.
+  - Repository AGENTS.md remains authoritative for local governance and artifact paths.
