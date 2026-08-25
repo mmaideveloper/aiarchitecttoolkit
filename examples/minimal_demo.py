@@ -18,6 +18,9 @@ REQUIRED_SKILLS = {
     "generate-adr",
     "prepare-task",
     "review-architecture-conformance",
+    "security-review",
+    "azure-review",
+    "ai-solution-final-review",
 }
 
 

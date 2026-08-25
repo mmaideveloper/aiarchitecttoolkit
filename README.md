@@ -8,6 +8,9 @@ A reusable set of Codex skills for software architects, with a focus on AI archi
 Idea -> optional Business Decision Record -> Use case
      -> Architecture Design Document -> necessary C4 views and ADRs
      -> Implementation-ready task -> Implementation -> Conformance review
+                                             |-> Security review
+                                             |-> Azure review (when applicable)
+                                             `-> AI solution final review
 ```
 
 The C4 capability supports system context, container, component, dynamic, deployment, integration, and regulated-data-flow views. Each artifact remains evidence-backed. The toolkit distinguishes confirmed facts, assumptions, items to verify, and unknowns; it never invents approvals.
@@ -24,6 +27,9 @@ The C4 capability supports system context, container, component, dynamic, deploy
 | `generate-adr` | `ADR-NNN` architecture decision record |
 | `prepare-task` | Implementation-ready task specification |
 | `review-architecture-conformance` | `ACR-NNN` or an in-chat review |
+| `security-review` | Threat-and-control security assessment |
+| `azure-review` | Azure architecture and operational-readiness assessment |
+| `ai-solution-final-review` | Final AI readiness recommendation and evidence ledger |
 | `architecture-change` | End-to-end coordination and traceability |
 
 ## Use in another repository

@@ -1,0 +1,4 @@
+interface:
+  display_name: "AI Solution Final Review"
+  short_description: "Synthesize AI release readiness"
+  default_prompt: "Use $ai-solution-final-review to assess the final readiness of this AI solution and recommend a gate outcome."

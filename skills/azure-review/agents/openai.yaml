@@ -1,0 +1,4 @@
+interface:
+  display_name: "Azure Review"
+  short_description: "Assess Azure architecture readiness"
+  default_prompt: "Use $azure-review to assess this Azure solution against its requirements and current Azure guidance."

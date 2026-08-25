@@ -1,0 +1,4 @@
+interface:
+  display_name: "Security Review"
+  short_description: "Assess threats and security controls"
+  default_prompt: "Use $security-review to perform an evidence-backed security review of this solution."

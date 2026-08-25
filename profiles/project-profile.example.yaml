@@ -15,6 +15,11 @@ governance:
   ai_regulation: applicability-to-confirm
   safety: project-specific
   approval_authorities: []
+reviews:
+  security_required: project-specific
+  cloud_platform: to-confirm
+  final_ai_gate_required: project-specific
+  evidence_validity: project-specific
 task_management:
   provider: repository-defined
   ready_status: Ready

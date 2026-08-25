@@ -19,7 +19,8 @@ Coordinate the lifecycle and use focused skills to author artifacts.
 8. Use `$generate-adr` once per independently changeable decision.
 9. Reconcile the ADD, BDR impacts, and target-state C4 views after ADR acceptance.
 10. Use `$prepare-task` to create one or more implementation-ready task specifications. Do not mark a task ready while a blocking decision or compliance question remains open.
-11. After implementation, use `$review-architecture-conformance` and resolve or explicitly govern deviations.
+11. After implementation, use `$review-architecture-conformance`; use `$security-review` when required by the risk or project profile, and `$azure-review` when Azure is in scope. Resolve or explicitly govern deviations and findings.
+12. Before an AI solution release or formal gate, use `$ai-solution-final-review` to synthesize current evidence and recommend readiness without inferring approval.
 
 Read [references/artifact-contract.md](references/artifact-contract.md) when creating, linking, or changing lifecycle state for any artifact.
 
@@ -33,4 +34,4 @@ Read [references/artifact-contract.md](references/artifact-contract.md) when cre
 
 ## Completion
 
-Report artifact paths and states, traceability gaps, accepted versus proposed decisions, governance outcome, task readiness, and the next responsible action.
+Report artifact paths and states, traceability gaps, accepted versus proposed decisions, specialist-review status, governance outcome, task or release readiness, and the next responsible action.
