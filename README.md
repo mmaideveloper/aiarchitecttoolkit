@@ -59,6 +59,21 @@ Validate a project's architecture identifiers, lifecycle states, artifact refere
 python scripts/validate_architecture.py <project>/architecture
 ```
 
+### Validate and render a use case in GitHub Actions
+
+The manually triggered `Validate use case and create PDF` workflow accepts a
+`UC-NNN` identifier, validates the matching
+`architecture/use-cases/UC-NNN-*.md` document, evaluates architecture and POC
+readiness, renders linked Mermaid diagrams, and creates a verified PDF.
+
+Run it from **Actions > Validate use case and create PDF > Run workflow**. The
+default input is `UC-001`. The workflow always uploads the PDF, JSON report,
+Markdown summary, and rendered diagrams. Its final gate fails when checklist or
+readiness blockers remain, while preserving the reports for review.
+
+The patient-identifier check is a conservative static scan and does not replace
+privacy, clinical, security, data, or architecture review.
+
 ## Packaging status
 
 This repository is intentionally a source project, not yet a Codex plugin. A later release can add `.codex-plugin/plugin.json` and marketplace metadata without changing the skill contracts.
