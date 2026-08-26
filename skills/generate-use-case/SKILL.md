@@ -7,7 +7,7 @@ description: Create, refine, and review source-backed architecture use-case docu
 
 ## Workflow
 
-1. Read `AGENTS.md`, existing use cases, supplied stakeholder notes, and relevant repository sources.
+1. Read `AGENTS.md`, `architecture/toolkit-profile.yaml` when present, existing use cases, supplied stakeholder notes, and relevant repository sources. If the profile configures `document_instructions.use_case`, resolve the repository-relative path, read it completely, and apply it in addition to this skill. Stop and report a missing or unreadable configured instruction file rather than silently ignoring it.
 2. Resolve the next `UC-NNN` or the referenced existing use case. Never reuse or renumber an identifier.
 3. Copy [assets/use-case-template.md](assets/use-case-template.md); replace every placeholder and remove irrelevant optional sections.
 4. Separate stakeholder facts from proposals and assumptions. Ask focused questions when ambiguity changes scope, data handling, acceptance criteria, or risk.
@@ -23,6 +23,7 @@ description: Create, refine, and review source-backed architecture use-case docu
 - Identify human decisions and automation boundaries for legal-, clinical-, or other high-impact outcomes.
 - Preserve a concise feedback/change log when updating a reviewed draft.
 - Link related ADDs, diagrams, ADRs, tasks, and evidence using repository-relative paths or authorized identifiers.
+- Treat profile document instructions as domain-specific constraints. They may strengthen this workflow but must not override repository instructions, supplied evidence, lifecycle gates, or the prohibition on inferred approval and classification.
 
 ## Output
 

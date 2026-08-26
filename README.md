@@ -41,7 +41,7 @@ Copy the required complete folders from `skills/` into `<project>/skills/`, or c
 3. Keep organization-specific requirements in the profile or `AGENTS.md`, not in the core skills.
 4. Invoke `$architecture-change` for the complete workflow or a focused skill for one artifact.
 
-Examples for Jurisdigta and AGEL are under `profiles/`. They contain no secrets or environment-specific identifiers.
+Examples for Jurisdigta, AGEL, and a project-neutral healthcare configuration are under `profiles/`. Document-type instructions can be selected through a profile and live under `profiles/instructions/`. They contain no secrets or environment-specific identifiers.
 
 See `docs/lifecycle.md` for gates and traceability, and `docs/adoption.md` for project adoption and customization boundaries.
 

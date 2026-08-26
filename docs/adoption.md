@@ -26,6 +26,17 @@ skills/
 
 Copy `profiles/project-profile.example.yaml` to `architecture/toolkit-profile.yaml`. Adapt project name, artifact paths, governance frameworks, approval authorities, and task-management conventions. Do not put secrets, personal records, tokens, or sensitive endpoints in the profile.
 
+Profiles may configure document-type guidance under `document_instructions`. Paths are repository-relative and are loaded only by the corresponding authoring skill. Keep reusable domain guidance under `profiles/instructions/`; for example, `profiles/healthcare.example.yaml` maps use-case generation to `profiles/instructions/healthcare-use-case.md`. A missing configured instruction is an error, not an instruction to continue without the domain safeguards.
+
+```yaml
+document_instructions:
+  use_case: profiles/instructions/healthcare-use-case.md
+  business_design: null
+  architecture_design: null
+  decision: null
+  conformance_review: null
+```
+
 The target repository's `AGENTS.md` remains authoritative for commands, branching, worktrees, validation, deployment, and organization-specific safeguards.
 
 ## Customization boundary

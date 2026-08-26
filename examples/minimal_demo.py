@@ -22,6 +22,11 @@ REQUIRED_SKILLS = {
     "azure-review",
     "ai-solution-final-review",
 }
+REQUIRED_PROFILE_FILES = {
+    "profiles/project-profile.example.yaml",
+    "profiles/healthcare.example.yaml",
+    "profiles/instructions/healthcare-use-case.md",
+}
 
 
 def main() -> None:
@@ -29,6 +34,24 @@ def main() -> None:
     missing = REQUIRED_SKILLS - discovered
     if missing:
         raise SystemExit(f"Missing skills: {', '.join(sorted(missing))}")
+
+    missing_profile_files = {
+        relative for relative in REQUIRED_PROFILE_FILES if not (ROOT / relative).is_file()
+    }
+    if missing_profile_files:
+        raise SystemExit(
+            f"Missing profile files: {', '.join(sorted(missing_profile_files))}"
+        )
+
+    healthcare_profile = (ROOT / "profiles/healthcare.example.yaml").read_text(
+        encoding="utf-8"
+    )
+    instruction_match = re.search(r"^\s*use_case:\s*([^#\r\n]+)", healthcare_profile, re.M)
+    if not instruction_match:
+        raise SystemExit("Healthcare profile has no use-case instruction")
+    instruction_path = instruction_match.group(1).strip().strip("'\"")
+    if not (ROOT / instruction_path).is_file():
+        raise SystemExit(f"Broken healthcare use-case instruction: {instruction_path}")
 
     for skill_name in sorted(REQUIRED_SKILLS):
         skill_file = ROOT / "skills" / skill_name / "SKILL.md"

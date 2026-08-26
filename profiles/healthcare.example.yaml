@@ -1,28 +1,25 @@
 schema_version: 1
 project:
-  name: Example Project
-  domain: general
+  name: Example Healthcare Project
+  domain: healthcare
 artifacts:
   root: architecture
   use_cases: use-cases
-  business_decisions: business-decisions
+  business_design: business
   design: design
   diagrams: diagrams
   decisions: decisions
   reviews: reviews
 document_instructions:
-  use_case: null
-  business_design: null
-  architecture_design: null
-  decision: null
-  conformance_review: null
+  use_case: profiles/instructions/healthcare-use-case.md
 governance:
   privacy: applicable-law-to-confirm
   ai_regulation: applicability-to-confirm
-  safety: project-specific
+  clinical_safety: applicability-to-confirm
   approval_authorities: []
 reviews:
   security_required: project-specific
+  clinical_review_required: project-specific
   cloud_platform: to-confirm
   final_ai_gate_required: project-specific
   evidence_validity: project-specific
