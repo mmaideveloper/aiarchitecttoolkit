@@ -1,0 +1,130 @@
+name: Validate use case and create PDF
+
+on:
+  workflow_dispatch:
+    inputs:
+      use_case_id:
+        description: "Use-case identifier, for example UC-001"
+        required: true
+        default: "UC-001"
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  validate-and-render:
+    name: Validate and render ${{ inputs.use_case_id }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Validate input
+        shell: bash
+        run: |
+          if [[ ! "${{ inputs.use_case_id }}" =~ ^UC-[0-9]{3}$ ]]; then
+            echo "use_case_id must match UC-NNN" >&2
+            exit 2
+          fi
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up Node.js for Mermaid validation
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install rendering dependencies
+        run: |
+          python -m pip install --disable-pip-version-check reportlab==4.2.5 pypdf==5.1.0
+          npm install --global @mermaid-js/mermaid-cli@11.4.2
+
+      - name: Validate use case
+        id: validate
+        continue-on-error: true
+        run: |
+          python scripts/architecture/validate_use_case.py \
+            --use-case-id "${{ inputs.use_case_id }}" \
+            --repo-root . \
+            --output-dir "build/use-cases/${{ inputs.use_case_id }}"
+
+      - name: Resolve source document
+        id: source
+        shell: bash
+        run: |
+          source_path="$(find architecture/use-cases -maxdepth 1 -type f -name '${{ inputs.use_case_id }}-*.md' -print -quit)"
+          if [[ -z "$source_path" ]]; then
+            echo "No source document found for ${{ inputs.use_case_id }}" >&2
+            exit 2
+          fi
+          echo "path=$source_path" >> "$GITHUB_OUTPUT"
+          echo "stem=$(basename "$source_path" .md)" >> "$GITHUB_OUTPUT"
+
+      - name: Render linked Mermaid diagrams
+        id: mermaid
+        continue-on-error: true
+        shell: bash
+        run: |
+          mkdir -p "build/use-cases/${{ inputs.use_case_id }}/mermaid"
+          mapfile -t diagrams < <(jq -r '.mermaid_files[]' "build/use-cases/${{ inputs.use_case_id }}/use-case-validation-report.json")
+          for diagram in "${diagrams[@]}"; do
+            output="build/use-cases/${{ inputs.use_case_id }}/mermaid/$(basename "${diagram%.mmd}").svg"
+            mmdc --input "$diagram" --output "$output" --backgroundColor transparent
+          done
+
+      - name: Record Mermaid validation result
+        if: always() && hashFiles(format('build/use-cases/{0}/use-case-validation-report.json', inputs.use_case_id)) != ''
+        run: |
+          python scripts/architecture/finalize_mermaid_check.py \
+            --report-dir "build/use-cases/${{ inputs.use_case_id }}" \
+            --status "${{ steps.mermaid.outcome }}"
+
+      - name: Render PDF
+        run: |
+          python scripts/architecture/render_use_case_pdf.py \
+            --input "${{ steps.source.outputs.path }}" \
+            --output "build/use-cases/${{ inputs.use_case_id }}/${{ steps.source.outputs.stem }}.pdf"
+
+      - name: Add workflow results to job summary
+        if: always()
+        shell: bash
+        run: |
+          summary="build/use-cases/${{ inputs.use_case_id }}/use-case-validation-summary.md"
+          if [[ -f "$summary" ]]; then
+            cat "$summary" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Validation report was not produced." >> "$GITHUB_STEP_SUMMARY"
+          fi
+          echo >> "$GITHUB_STEP_SUMMARY"
+          echo "Mermaid rendering: **${{ steps.mermaid.outcome }}**" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload PDF and validation reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: "${{ inputs.use_case_id }}-validation-and-pdf"
+          path: "build/use-cases/${{ inputs.use_case_id }}/"
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Enforce validation and readiness gate
+        if: always()
+        shell: bash
+        run: |
+          failed=0
+          if [[ "${{ steps.validate.outcome }}" != "success" ]]; then
+            echo "Use-case checklist or architecture/POC readiness validation failed." >&2
+            failed=1
+          fi
+          if [[ "${{ steps.mermaid.outcome }}" != "success" ]]; then
+            echo "One or more linked Mermaid diagrams failed to render." >&2
+            failed=1
+          fi
+          exit "$failed"
+
