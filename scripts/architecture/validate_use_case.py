@@ -11,6 +11,8 @@ from dataclasses import dataclass, asdict
 from pathlib import Path
 from urllib.parse import unquote
 
+import yaml
+
 
 UNKNOWN = re.compile(r"\b(unknown|to verify|to classify|tbd|not yet|remain(?:s)? to be|requires? .* approval)\b", re.I)
 PLACEHOLDER_OWNER = re.compile(r"^(unknown|tbd|to verify|unassigned|none|n/a)$", re.I)
@@ -69,11 +71,20 @@ def ids_are_unique(text: str, prefix: str) -> bool:
     return bool(ids) and len(normalized) == len(set(normalized))
 
 
-def reviewer_evidence(text: str) -> tuple[bool, list[str]]:
+def reviewer_evidence(text: str, required: list[str]) -> tuple[bool, list[str]]:
     feedback = section(text, "Stakeholder Feedback Log")
-    required = ["clinical", "security", "privacy|data", "architecture"]
     missing = [item.replace("|", "/") for item in required if not re.search(item, feedback, re.I)]
     return not missing, missing
+
+
+def load_profile(path: Path) -> dict:
+    if not path.is_file():
+        raise ValueError(f"Project profile not found: {path}")
+    profile = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    rules = profile.get("validation", {}).get("use_case")
+    if not isinstance(rules, dict):
+        raise ValueError("Profile must define validation.use_case rules")
+    return profile
 
 
 def add(checks: list[Check], name: str, passed: bool, ok: str, fail: str) -> None:
@@ -85,17 +96,32 @@ def main() -> int:
     parser.add_argument("--use-case-id", required=True)
     parser.add_argument("--repo-root", default=".")
     parser.add_argument("--output-dir", required=True)
+    parser.add_argument("--profile", required=True)
     args = parser.parse_args()
 
     uc_id = args.use_case_id.upper().strip()
-    if not re.fullmatch(r"UC-\d{3}", uc_id):
+    if not re.fullmatch(r"UC-\d{3,}", uc_id):
         print(f"Invalid use-case ID: {args.use_case_id}", file=sys.stderr)
         return 2
 
     root = Path(args.repo_root).resolve()
-    matches = sorted((root / "architecture" / "use-cases").glob(f"{uc_id}-*.md"))
+    profile_path = Path(args.profile)
+    if not profile_path.is_absolute():
+        profile_path = root / profile_path
+    try:
+        profile = load_profile(profile_path.resolve())
+    except (OSError, ValueError, yaml.YAMLError) as error:
+        print(str(error), file=sys.stderr)
+        return 2
+    project = profile.get("project", {})
+    rules = profile["validation"]["use_case"]
+    artifacts = profile.get("artifacts", {})
+    artifact_root = root / str(artifacts.get("root", "architecture"))
+    use_case_dir = artifact_root / str(artifacts.get("use_cases", "use-cases"))
+    matches = sorted(use_case_dir.glob(f"{uc_id}-*.md"))
     if len(matches) != 1:
-        print(f"Expected exactly one architecture/use-cases/{uc_id}-*.md; found {len(matches)}", file=sys.stderr)
+        relative_dir = use_case_dir.relative_to(root).as_posix()
+        print(f"Expected exactly one {relative_dir}/{uc_id}-*.md; found {len(matches)}", file=sys.stderr)
         return 2
 
     source = matches[0]
@@ -111,9 +137,17 @@ def main() -> int:
     add(checks, "Required metadata present", not missing_meta, "Required Record metadata is present.", f"Missing metadata: {', '.join(missing_meta)}.")
 
     owner_ok = bool(meta["Owner"] and not PLACEHOLDER_OWNER.match(meta["Owner"]))
-    clinical_owner = bool(re.search(r"clinical[^\n|]*(owner|governance|lead|accountable)", record, re.I))
-    add(checks, "Business and clinical owners identified", owner_ok and clinical_owner,
-        "Responsible business and clinical owners are identified.", "A confirmed business owner and a confirmed clinical owner are required.")
+    required_owner_roles = rules.get("required_owner_roles", [])
+    missing_owner_roles: list[str] = []
+    for item in required_owner_roles:
+        match = re.search(str(item.get("pattern", r"(?!)")), record, re.I)
+        matching_line = record[record.rfind("\n", 0, match.start()) + 1:record.find("\n", match.end())] if match else ""
+        if not match or UNKNOWN.search(matching_line):
+            missing_owner_roles.append(str(item.get("label", item.get("id", "unnamed role"))))
+    owners_ok = owner_ok and not missing_owner_roles
+    add(checks, "Required owners identified", owners_ok,
+        "The accountable owner and profile-required roles are identified.",
+        "Missing or unresolved owner roles: " + ", ".join(missing_owner_roles or ["Record Owner"]) + ".")
 
     problem = section(text, "Business View")
     outcome = section(text, "Goal and Business Outcome")
@@ -124,14 +158,18 @@ def main() -> int:
     add(checks, "Scope and exclusions completed", "### In scope" in scope and "### Out of scope" in scope,
         "In-scope and out-of-scope behavior is explicit.", "Both in-scope and out-of-scope sections are required.")
 
-    autonomy = bool(re.search(r"autonom|must not.*(diagnos|prescrib|triage|decision)|human.*authority", text, re.I))
+    autonomy = bool(re.search(r"autonom|must not.*(decid|determin|approv|diagnos|prescrib|triage)|human.*authority", text, re.I))
+    if not rules.get("require_ai_autonomy_boundary", True):
+        autonomy = True
     add(checks, "AI autonomy defined", autonomy, "AI role and autonomy boundary are explicit.", "AI autonomy and prohibited decisions are not explicit.")
 
-    oversight = bool(re.search(r"human (review|oversight)|healthcare professional.*(inspect|determin|decid)|clinical governance.*review", text, re.I))
+    oversight = bool(re.search(r"human (review|oversight)|professional.*(inspect|determin|decid|approve)|governance.*review", text, re.I))
+    if not rules.get("require_human_oversight", True):
+        oversight = True
     add(checks, "Human review point defined", oversight, "Meaningful human decision/review points are documented.", "A meaningful human review or decision point is missing.")
 
     info = section(text, "Information and Data")
-    source_known = bool(info and re.search(r"approved knowledge source", info, re.I) and not re.search(r"Which .*sources.*\|\s*Unknown", text, re.I))
+    source_known = bool(info and re.search(r"approved (?:knowledge |legal |data )?source", info, re.I) and not re.search(r"Which .*sources.*\|\s*Unknown", text, re.I))
     discovery_assigned = bool(re.search(r"Which .*sources.*\|[^\n]*\|\s*(?!Unknown|TBD)[^|\n]+", text, re.I))
     add(checks, "Data sources and owners identified", source_known or discovery_assigned,
         "Required data sources are known or discovery has an assigned owner.", "Data sources are unresolved without a confirmed discovery owner/action.")
@@ -145,6 +183,8 @@ def main() -> int:
         "AI behavior covers material alternate and failure conditions.", "AI behavior for missing, conflicting, unsafe, or unavailable evidence is incomplete.")
 
     metrics = bool(re.search(r"baseline", outcome, re.I) and re.search(r"target", outcome, re.I) and not UNKNOWN.search(outcome))
+    if not rules.get("require_success_metrics", True):
+        metrics = True
     add(checks, "Success metrics defined", metrics, "Outcome has approved measurable baseline(s) and target(s).",
         "Metric categories exist, but approved baselines or targets remain unresolved.")
 
@@ -163,18 +203,31 @@ def main() -> int:
     add(checks, "Links to dependent artifacts are valid", not invalid_links,
         "All repository-relative artifact links resolve.", f"Invalid links: {', '.join(invalid_links)}.")
 
-    pii_patterns = {
+    identifier_patterns = {
         "email address": r"\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b",
         "phone number": r"(?<![A-Z0-9-])(?:\+\d{1,3}[ .-]?)?(?:\d[ .-]?){9,12}(?!\d)",
         "patient/MRN identifier": r"\b(?:patient\s*(?:id|number)|mrn)\s*[:#]\s*[A-Z0-9-]{4,}\b",
         "named date of birth": r"\b(?:dob|date of birth)\s*[:#]\s*\d{1,4}[-/.]\d{1,2}[-/.]\d{1,4}\b",
+        "legal case/client identifier": r"\b(?:client|case|matter)\s*(?:id|number|no\.)\s*[:#]\s*[A-Z0-9-]{4,}\b",
     }
-    pii_hits = [label for label, pattern in pii_patterns.items() if re.search(pattern, text, re.I)]
-    add(checks, "Documentation contains no known patient identifiers", not pii_hits,
-        "Static scan found no known patient-identifier patterns.", f"Potential patient identifiers detected: {', '.join(pii_hits)}.")
+    scan_groups = {
+        "common_personal": ["email address", "phone number", "named date of birth"],
+        "patient": ["patient/MRN identifier"],
+        "legal_case": ["legal case/client identifier"],
+    }
+    selected_labels = {
+        label
+        for group in rules.get("identifier_scans", ["common_personal"])
+        for label in scan_groups.get(str(group), [])
+    }
+    identifier_hits = [label for label in sorted(selected_labels) if re.search(identifier_patterns[label], text, re.I)]
+    add(checks, "Documentation contains no configured identifier patterns", not identifier_hits,
+        "Static scan found no identifier patterns selected by the project profile.",
+        f"Potential identifiers detected: {', '.join(identifier_hits)}.")
 
     status = meta["Status"].strip().lower()
-    reviews_ok, missing_reviewers = reviewer_evidence(text)
+    required_reviewers = [str(item) for item in rules.get("required_reviewer_topics", [])]
+    reviews_ok, missing_reviewers = reviewer_evidence(text, required_reviewers)
     approval_ok = status == "draft" or (status == "reviewed" and bool(section(text, "Stakeholder Feedback Log"))) or (status == "approved" and reviews_ok)
     add(checks, "Approval status is consistent with required reviewers", approval_ok,
         f"Status '{meta['Status']}' is consistent with recorded review evidence.",
@@ -186,7 +239,7 @@ def main() -> int:
 
     by_name = {check.name: check for check in checks}
     readiness = [
-        ("A responsible business owner exists", owner_ok),
+        ("Profile-required accountable owners exist", owners_ok),
         ("The user and problem are clearly identified", bool(problem and re.search(r"### Users", problem))),
         ("The intended outcome is measurable", metrics),
         ("Scope and exclusions are explicit", by_name["Scope and exclusions completed"].status == "pass"),
@@ -195,8 +248,8 @@ def main() -> int:
         ("Human oversight is defined", oversight),
         ("High-impact failure scenarios are documented", risks_ok),
         ("An initial evaluation approach exists", bool(re.search(r"evaluation", text, re.I) and re.search(r"measure", text, re.I))),
-        ("Relevant clinical, security, data, and architecture reviewers have participated", reviews_ok),
-        ("Remaining unknowns do not prevent a safe POC", not unresolved_rows),
+        ("Profile-required reviewers have participated", reviews_ok),
+        ("Remaining unknowns do not prevent a safe evaluation", not unresolved_rows),
         ("The POC has a proceed, redesign, or stop decision rule", bool(re.search(r"proceed.*redesign.*stop", text, re.I | re.S))),
     ]
     ready = all(passed for _, passed in readiness)
@@ -205,6 +258,9 @@ def main() -> int:
     output.mkdir(parents=True, exist_ok=True)
     report = {
         "use_case_id": uc_id,
+        "project": project.get("name", "Unknown"),
+        "project_key": project.get("key", "unknown"),
+        "profile_path": profile_path.relative_to(root).as_posix() if profile_path.is_relative_to(root) else str(profile_path),
         "use_case_path": source.relative_to(root).as_posix(),
         "document_status": meta["Status"],
         "checks": [asdict(check) for check in checks],
@@ -219,7 +275,7 @@ def main() -> int:
     }
     (output / "use-case-validation-report.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
 
-    lines = [f"# Validation report: {uc_id}", "", f"Source: `{report['use_case_path']}`", "", "## Checklist", "",
+    lines = [f"# Validation report: {uc_id}", "", f"Project: **{report['project']}**", "", f"Profile: `{report['profile_path']}`", "", f"Source: `{report['use_case_path']}`", "", "## Checklist", "",
              "| Check | Result | Finding |", "|---|---|---|"]
     for check in checks:
         lines.append(f"| {check.name} | {check.status.upper()} | {check.detail.replace('|', '/')} |")
@@ -227,7 +283,7 @@ def main() -> int:
               report["readiness_statement"], "", "| Criterion | Result |", "|---|---|"]
     for name, passed in readiness:
         lines.append(f"| {name} | {'PASS' if passed else 'FAIL'} |")
-    lines += ["", "> Patient-identifier validation is a conservative static scan and does not replace human privacy review.", ""]
+    lines += ["", "> Identifier validation is a conservative profile-selected static scan and does not replace human privacy, security, clinical, or legal review.", ""]
     (output / "use-case-validation-summary.md").write_text("\n".join(lines), encoding="utf-8")
 
     print(report["readiness_statement"])
@@ -237,4 +293,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

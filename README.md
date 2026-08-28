@@ -43,7 +43,7 @@ Copy the required complete folders from `skills/` into `<project>/skills/`, or c
 
 Examples for Jurisdigta, AGEL, and a project-neutral healthcare configuration are under `profiles/`. Document-type instructions can be selected through a profile and live under `profiles/instructions/`. They contain no secrets or environment-specific identifiers.
 
-See `docs/lifecycle.md` for gates and traceability, and `docs/adoption.md` for project adoption and customization boundaries.
+See `docs/lifecycle.md` for gates and traceability, and `docs/adoption.md` for project adoption and customization boundaries. Project-specific adoption guides are available for [AGEL](docs/adoption-agel.md) and [Jurisdigta](docs/adoption-jurisdigta.md).
 
 ## Validate
 
@@ -59,20 +59,24 @@ Validate a project's architecture identifiers, lifecycle states, artifact refere
 python scripts/validate_architecture.py <project>/architecture
 ```
 
-### Validate and render a use case in GitHub Actions
+### Validate and render a project use case in GitHub Actions
 
-The manually triggered `Validate use case and create PDF` workflow accepts a
-`UC-NNN` identifier, validates the matching
-`architecture/use-cases/UC-NNN-*.md` document, evaluates architecture and POC
-readiness, renders linked Mermaid diagrams, and creates a verified PDF.
+The `Validate use case and create PDF` workflow supports manual dispatch and
+reusable `workflow_call`. It accepts `project_name` and `UC-NNN`, resolves the
+project repository and `profiles/<project_name>/profile.yaml`, validates the
+matching project use case with the selected rules, evaluates readiness, renders
+linked Mermaid diagrams, and creates a verified PDF.
 
 Run it from **Actions > Validate use case and create PDF > Run workflow**. The
-default input is `UC-001`. The workflow always uploads the PDF, JSON report,
+Select `agel` or `jurisdigta`; the default use case is `UC-001`. JurisDigta's
+repository is configured in its profile. AGEL requires `source_repository`
+until its GitHub repository is configured. The workflow uploads the PDF, JSON report,
 Markdown summary, and rendered diagrams. Its final gate fails when checklist or
 readiness blockers remain, while preserving the reports for review.
 
-The patient-identifier check is a conservative static scan and does not replace
-privacy, clinical, security, data, or architecture review.
+Identifier scans and required reviewers are selected by the project profile.
+Static validation does not replace privacy, clinical, legal, security, data, or
+architecture review.
 
 ## Packaging status
 

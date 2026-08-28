@@ -26,6 +26,12 @@ REQUIRED_PROFILE_FILES = {
     "profiles/project-profile.example.yaml",
     "profiles/healthcare.example.yaml",
     "profiles/instructions/healthcare-use-case.md",
+    "profiles/agel/profile.yaml",
+    "profiles/agel/AGENTS.md",
+    "profiles/agel/instructions/use-case.md",
+    "profiles/jurisdigta/profile.yaml",
+    "profiles/jurisdigta/AGENTS.md",
+    "profiles/jurisdigta/instructions/use-case.md",
 }
 
 
@@ -52,6 +58,23 @@ def main() -> None:
     instruction_path = instruction_match.group(1).strip().strip("'\"")
     if not (ROOT / instruction_path).is_file():
         raise SystemExit(f"Broken healthcare use-case instruction: {instruction_path}")
+
+    for project_name in ("agel", "jurisdigta"):
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(ROOT / "scripts/architecture/resolve_project.py"),
+                "--project-name",
+                project_name,
+                "--toolkit-root",
+                str(ROOT),
+            ],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        if result.returncode:
+            raise SystemExit(result.stdout or result.stderr)
 
     for skill_name in sorted(REQUIRED_SKILLS):
         skill_file = ROOT / "skills" / skill_name / "SKILL.md"

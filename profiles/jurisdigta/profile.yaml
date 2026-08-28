@@ -1,0 +1,51 @@
+schema_version: 1
+project:
+  key: jurisdigta
+  name: JurisDigta
+  domain: legal-ai
+source:
+  github_repository: mmaideveloper/aijurisdictionagents
+artifacts:
+  root: architecture
+  use_cases: use-cases
+  business_decisions: business-decisions
+  design: design
+  diagrams: diagrams
+  decisions: decisions
+  reviews: reviews
+project_instructions:
+  agents: profiles/jurisdigta/AGENTS.md
+document_instructions:
+  use_case:
+    - profiles/jurisdigta/instructions/use-case.md
+governance:
+  privacy: GDPR
+  ai_regulation: EU AI Act applicability-to-confirm
+  safety: human oversight for legal-risk outputs
+  approval_authorities: []
+validation:
+  use_case:
+    required_owner_roles:
+      - id: accountable_owner
+        label: accountable product or business owner
+        pattern: "(business|product)[^\\n|]*(owner|accountable)"
+      - id: legal_risk_owner
+        label: legal-risk or legal-domain owner
+        pattern: "legal[^\\n|]*(owner|expert|counsel|accountable|governance)"
+    required_reviewer_topics:
+      - legal
+      - security
+      - "privacy|data"
+      - architecture
+    identifier_scans:
+      - common_personal
+      - legal_case
+    require_human_oversight: true
+    require_ai_autonomy_boundary: true
+    require_success_metrics: true
+task_management:
+  provider: github
+  ready_status: Ready
+notes:
+  - Never infer legal approval, AI-risk classification, data classification, regulatory applicability, or ownership.
+  - The project repository AGENTS.md remains authoritative.

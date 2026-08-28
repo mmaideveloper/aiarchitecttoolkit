@@ -1,5 +1,15 @@
 # Adopt the toolkit
 
+## Recommended multi-project model
+
+Keep architecture documents in the repository of the project they govern. Keep reusable skills, validators, schemas, project profiles, project-scoped instructions, and reusable GitHub workflows in this toolkit. Each project should contain only its local profile overrides and a small caller workflow pinned to a toolkit release tag or commit SHA.
+
+`project_name` resolves exactly to `profiles/<project_name>/profile.yaml`. That profile identifies the source repository, project `AGENTS.md`, document-specific Markdown instructions, artifact paths, governance settings, and validation rules. Unknown project names fail; there is no fallback profile. The target repository's root `AGENTS.md` remains authoritative.
+
+See the project guides for [AGEL](adoption-agel.md) and [Jurisdigta](adoption-jurisdigta.md), and the proposed rationale in [ADR-001](../architecture/decisions/ADR-001-consume-toolkit-through-versioned-reusable-workflows.md).
+
+This replaces copying as the target operating model. The copy model below remains a temporary option until the reusable workflow and release process are implemented.
+
 ## Copy model
 
 Until plugin packaging is added, copy complete skill directories into a repository-visible `skills/` directory or the user's Codex skill directory. Keep each directory intact so its `agents/`, `assets/`, and `references/` remain available.
@@ -26,7 +36,7 @@ skills/
 
 Copy `profiles/project-profile.example.yaml` to `architecture/toolkit-profile.yaml`. Adapt project name, artifact paths, governance frameworks, approval authorities, and task-management conventions. Do not put secrets, personal records, tokens, or sensitive endpoints in the profile.
 
-Profiles may configure document-type guidance under `document_instructions`. Paths are repository-relative and are loaded only by the corresponding authoring skill. Keep reusable domain guidance under `profiles/instructions/`; for example, `profiles/healthcare.example.yaml` maps use-case generation to `profiles/instructions/healthcare-use-case.md`. A missing configured instruction is an error, not an instruction to continue without the domain safeguards.
+Profiles may configure document-type guidance under `document_instructions`. Project-selected toolkit profile paths are toolkit-relative; local target profiles use target-repository-relative paths. They are loaded only by the corresponding authoring skill. A missing configured instruction is an error, not an instruction to continue without the domain safeguards.
 
 ```yaml
 document_instructions:
