@@ -1,0 +1,51 @@
+schema_version: 1
+project:
+  key: agel
+  name: AGEL
+  domain: healthcare
+source:
+  github_repository: null
+artifacts:
+  root: architecture
+  use_cases: use-cases
+  business_decisions: business-decisions
+  design: design
+  diagrams: diagrams
+  decisions: decisions
+  reviews: reviews
+project_instructions:
+  agents: profiles/agel/AGENTS.md
+document_instructions:
+  use_case:
+    - profiles/agel/instructions/use-case.md
+governance:
+  privacy: GDPR
+  ai_regulation: applicability-to-confirm
+  safety: clinical-safety-assessment-required
+  approval_authorities: []
+validation:
+  use_case:
+    required_owner_roles:
+      - id: accountable_owner
+        label: accountable business owner
+        pattern: "(business|product)[^\\n|]*(owner|accountable)"
+      - id: clinical_owner
+        label: clinical owner
+        pattern: "clinical[^\\n|]*(owner|governance|lead|accountable)"
+    required_reviewer_topics:
+      - clinical
+      - security
+      - "privacy|data"
+      - architecture
+    identifier_scans:
+      - common_personal
+      - patient
+    require_human_oversight: true
+    require_ai_autonomy_boundary: true
+    require_success_metrics: true
+task_management:
+  provider: repository-defined
+  ready_status: Ready
+notes:
+  - Never infer patient-data classification, clinical approval, or architecture-board approval.
+  - The project repository AGENTS.md remains authoritative.

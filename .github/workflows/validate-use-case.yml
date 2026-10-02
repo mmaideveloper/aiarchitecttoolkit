@@ -3,66 +3,148 @@ name: Validate use case and create PDF
 on:
   workflow_dispatch:
     inputs:
+      project_name:
+        description: "Toolkit project profile key"
+        required: true
+        default: "agel"
+        type: choice
+        options: [agel, jurisdigta]
       use_case_id:
         description: "Use-case identifier, for example UC-001"
         required: true
         default: "UC-001"
         type: string
+      source_repository:
+        description: "Optional owner/repository override"
+        required: false
+        type: string
+      project_ref:
+        description: "Project branch, tag, or commit"
+        required: true
+        default: "main"
+        type: string
+      toolkit_ref:
+        description: "Toolkit branch, tag, or commit"
+        required: true
+        default: "main"
+        type: string
+  workflow_call:
+    inputs:
+      project_name:
+        required: true
+        type: string
+      use_case_id:
+        required: true
+        type: string
+      source_repository:
+        required: false
+        default: ""
+        type: string
+      project_ref:
+        required: false
+        default: "main"
+        type: string
+      toolkit_ref:
+        required: false
+        default: "main"
+        type: string
+    secrets:
+      project_repository_token:
+        description: "Optional token when GITHUB_TOKEN cannot read the project repository"
+        required: false
 
 permissions:
   contents: read
 
 jobs:
   validate-and-render:
-    name: Validate and render ${{ inputs.use_case_id }}
+    name: Validate ${{ inputs.project_name }} ${{ inputs.use_case_id }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-
-      - name: Validate input
+      - name: Validate inputs
         shell: bash
         run: |
-          if [[ ! "${{ inputs.use_case_id }}" =~ ^UC-[0-9]{3}$ ]]; then
-            echo "use_case_id must match UC-NNN" >&2
-            exit 2
-          fi
+          [[ "${{ inputs.project_name }}" =~ ^[a-z0-9-]+$ ]] || { echo "Invalid project_name" >&2; exit 2; }
+          [[ "${{ inputs.use_case_id }}" =~ ^UC-[0-9]{3,}$ ]] || { echo "use_case_id must match UC-NNN" >&2; exit 2; }
+
+      - name: Check out toolkit
+        uses: actions/checkout@v4
+        with:
+          repository: mmaideveloper/aiarchitecttoolkit
+          ref: ${{ inputs.toolkit_ref }}
+          path: toolkit
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
-      - name: Set up Node.js for Mermaid validation
+      - name: Install Python dependencies
+        run: python -m pip install --disable-pip-version-check PyYAML==6.0.2 reportlab==4.2.5 pypdf==5.1.0
+
+      - name: Resolve project profile
+        id: project
+        run: |
+          python toolkit/scripts/architecture/resolve_project.py \
+            --project-name "${{ inputs.project_name }}" \
+            --toolkit-root toolkit \
+            --github-output "$GITHUB_OUTPUT"
+
+      - name: Resolve source repository
+        id: source-repository
+        shell: bash
+        env:
+          OVERRIDE_REPOSITORY: ${{ inputs.source_repository }}
+          PROFILE_REPOSITORY: ${{ steps.project.outputs.repository }}
+          CALLER_REPOSITORY: ${{ github.repository }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          repository="$OVERRIDE_REPOSITORY"
+          if [[ -z "$repository" && "$EVENT_NAME" == "workflow_call" && "$CALLER_REPOSITORY" != "mmaideveloper/aiarchitecttoolkit" ]]; then
+            repository="$CALLER_REPOSITORY"
+          fi
+          [[ -n "$repository" ]] || repository="$PROFILE_REPOSITORY"
+          if [[ ! "$repository" =~ ^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$ ]]; then
+            echo "No repository configured for '${{ inputs.project_name }}'. Configure source.github_repository or supply source_repository." >&2
+            exit 2
+          fi
+          echo "repository=$repository" >> "$GITHUB_OUTPUT"
+
+      - name: Check out selected project
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ steps.source-repository.outputs.repository }}
+          ref: ${{ inputs.project_ref }}
+          token: ${{ secrets.project_repository_token || github.token }}
+          path: project
+
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "22"
 
-      - name: Install rendering dependencies
-        run: |
-          python -m pip install --disable-pip-version-check reportlab==4.2.5 pypdf==5.1.0
-          npm install --global @mermaid-js/mermaid-cli@11.4.2
+      - name: Install Mermaid CLI
+        run: npm install --global @mermaid-js/mermaid-cli@11.4.2
 
-      - name: Validate use case
+      - name: Validate use case with selected profile
         id: validate
         continue-on-error: true
         run: |
-          python scripts/architecture/validate_use_case.py \
+          python toolkit/scripts/architecture/validate_use_case.py \
             --use-case-id "${{ inputs.use_case_id }}" \
-            --repo-root . \
-            --output-dir "build/use-cases/${{ inputs.use_case_id }}"
+            --repo-root project \
+            --profile "$GITHUB_WORKSPACE/toolkit/${{ steps.project.outputs.profile_path }}" \
+            --output-dir "$GITHUB_WORKSPACE/build/use-cases/${{ inputs.project_name }}/${{ inputs.use_case_id }}"
 
       - name: Resolve source document
         id: source
         shell: bash
         run: |
-          source_path="$(find architecture/use-cases -maxdepth 1 -type f -name '${{ inputs.use_case_id }}-*.md' -print -quit)"
-          if [[ -z "$source_path" ]]; then
-            echo "No source document found for ${{ inputs.use_case_id }}" >&2
-            exit 2
-          fi
+          source_dir="project/${{ steps.project.outputs.artifact_root }}/${{ steps.project.outputs.use_cases_dir }}"
+          source_path="$(find "$source_dir" -maxdepth 1 -type f -name '${{ inputs.use_case_id }}-*.md' -print -quit)"
+          [[ -n "$source_path" ]] || { echo "No source document found in $source_dir" >&2; exit 2; }
           echo "path=$source_path" >> "$GITHUB_OUTPUT"
           echo "stem=$(basename "$source_path" .md)" >> "$GITHUB_OUTPUT"
 
@@ -71,60 +153,47 @@ jobs:
         continue-on-error: true
         shell: bash
         run: |
-          mkdir -p "build/use-cases/${{ inputs.use_case_id }}/mermaid"
-          mapfile -t diagrams < <(jq -r '.mermaid_files[]' "build/use-cases/${{ inputs.use_case_id }}/use-case-validation-report.json")
+          report_dir="build/use-cases/${{ inputs.project_name }}/${{ inputs.use_case_id }}"
+          mkdir -p "$report_dir/mermaid"
+          mapfile -t diagrams < <(jq -r '.mermaid_files[]' "$report_dir/use-case-validation-report.json")
           for diagram in "${diagrams[@]}"; do
-            output="build/use-cases/${{ inputs.use_case_id }}/mermaid/$(basename "${diagram%.mmd}").svg"
-            mmdc --input "$diagram" --output "$output" --backgroundColor transparent
+            mmdc --input "project/$diagram" --output "$report_dir/mermaid/$(basename "${diagram%.mmd}").svg" --backgroundColor transparent
           done
 
-      - name: Record Mermaid validation result
-        if: always() && hashFiles(format('build/use-cases/{0}/use-case-validation-report.json', inputs.use_case_id)) != ''
+      - name: Record Mermaid result
+        if: always() && hashFiles(format('build/use-cases/{0}/{1}/use-case-validation-report.json', inputs.project_name, inputs.use_case_id)) != ''
         run: |
-          python scripts/architecture/finalize_mermaid_check.py \
-            --report-dir "build/use-cases/${{ inputs.use_case_id }}" \
+          python toolkit/scripts/architecture/finalize_mermaid_check.py \
+            --report-dir "build/use-cases/${{ inputs.project_name }}/${{ inputs.use_case_id }}" \
             --status "${{ steps.mermaid.outcome }}"
 
       - name: Render PDF
         run: |
-          python scripts/architecture/render_use_case_pdf.py \
+          python toolkit/scripts/architecture/render_use_case_pdf.py \
             --input "${{ steps.source.outputs.path }}" \
-            --output "build/use-cases/${{ inputs.use_case_id }}/${{ steps.source.outputs.stem }}.pdf"
+            --output "build/use-cases/${{ inputs.project_name }}/${{ inputs.use_case_id }}/${{ steps.source.outputs.stem }}.pdf"
 
-      - name: Add workflow results to job summary
+      - name: Add results to summary
         if: always()
         shell: bash
         run: |
-          summary="build/use-cases/${{ inputs.use_case_id }}/use-case-validation-summary.md"
-          if [[ -f "$summary" ]]; then
-            cat "$summary" >> "$GITHUB_STEP_SUMMARY"
-          else
-            echo "Validation report was not produced." >> "$GITHUB_STEP_SUMMARY"
-          fi
-          echo >> "$GITHUB_STEP_SUMMARY"
+          summary="build/use-cases/${{ inputs.project_name }}/${{ inputs.use_case_id }}/use-case-validation-summary.md"
+          [[ ! -f "$summary" ]] || cat "$summary" >> "$GITHUB_STEP_SUMMARY"
+          echo "Project profile: **${{ inputs.project_name }}**" >> "$GITHUB_STEP_SUMMARY"
+          echo "Source repository: **${{ steps.source-repository.outputs.repository }}**" >> "$GITHUB_STEP_SUMMARY"
           echo "Mermaid rendering: **${{ steps.mermaid.outcome }}**" >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Upload PDF and validation reports
+      - name: Upload reports and PDF
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: "${{ inputs.use_case_id }}-validation-and-pdf"
-          path: "build/use-cases/${{ inputs.use_case_id }}/"
+          name: "${{ inputs.project_name }}-${{ inputs.use_case_id }}-validation-and-pdf"
+          path: "build/use-cases/${{ inputs.project_name }}/${{ inputs.use_case_id }}/"
           if-no-files-found: error
           retention-days: 30
 
-      - name: Enforce validation and readiness gate
+      - name: Enforce gate
         if: always()
         shell: bash
         run: |
-          failed=0
-          if [[ "${{ steps.validate.outcome }}" != "success" ]]; then
-            echo "Use-case checklist or architecture/POC readiness validation failed." >&2
-            failed=1
-          fi
-          if [[ "${{ steps.mermaid.outcome }}" != "success" ]]; then
-            echo "One or more linked Mermaid diagrams failed to render." >&2
-            failed=1
-          fi
-          exit "$failed"
-
+          [[ "${{ steps.validate.outcome }}" == "success" && "${{ steps.mermaid.outcome }}" == "success" ]] || exit 1

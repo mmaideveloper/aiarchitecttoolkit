@@ -1,4 +1,12 @@
-"""Minimal dependency-free integrity check for the toolkit source tree."""
+"""Minimal integrity check for the toolkit source tree.
+
+Compliance workflow example:
+  First: Use $compliance-review for a synthetic architecture; complete intake.
+  Next: Use $compliance-review again (show saved parameters; reuse or edit).
+  Direct reuse: Run $compliance-review using the previous parameters.
+Settings live per scope in architecture/compliance/<scope-slug>.parameters.json;
+review evidence is refreshed on every run.
+"""
 
 from pathlib import Path
 import re
@@ -19,13 +27,21 @@ REQUIRED_SKILLS = {
     "prepare-task",
     "review-architecture-conformance",
     "security-review",
+    "compliance-review",
     "azure-review",
     "ai-solution-final-review",
 }
 REQUIRED_PROFILE_FILES = {
     "profiles/project-profile.example.yaml",
     "profiles/healthcare.example.yaml",
+    "profiles/healthcare-cz-sk-compliance.example.md",
     "profiles/instructions/healthcare-use-case.md",
+    "profiles/agel/profile.yaml",
+    "profiles/agel/AGENTS.md",
+    "profiles/agel/instructions/use-case.md",
+    "profiles/jurisdigta/profile.yaml",
+    "profiles/jurisdigta/AGENTS.md",
+    "profiles/jurisdigta/instructions/use-case.md",
 }
 
 
@@ -52,6 +68,23 @@ def main() -> None:
     instruction_path = instruction_match.group(1).strip().strip("'\"")
     if not (ROOT / instruction_path).is_file():
         raise SystemExit(f"Broken healthcare use-case instruction: {instruction_path}")
+
+    for project_name in ("agel", "jurisdigta"):
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(ROOT / "scripts/architecture/resolve_project.py"),
+                "--project-name",
+                project_name,
+                "--toolkit-root",
+                str(ROOT),
+            ],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        if result.returncode:
+            raise SystemExit(result.stdout or result.stderr)
 
     for skill_name in sorted(REQUIRED_SKILLS):
         skill_file = ROOT / "skills" / skill_name / "SKILL.md"

@@ -9,7 +9,7 @@ Coordinate the lifecycle and use focused skills to author artifacts.
 
 ## Workflow
 
-1. Read `AGENTS.md`, `architecture/toolkit-profile.yaml` when present, repository sources, existing artifacts, and stakeholder evidence.
+1. Read the target repository's root `AGENTS.md`. When `project_name` is supplied, load the exact `profiles/<project_name>/profile.yaml`, its configured project `AGENTS.md`, and document instructions from the toolkit before authoring artifacts; reject unknown projects. Also read `architecture/toolkit-profile.yaml` when present, repository sources, existing artifacts, and stakeholder evidence. The target repository's root instructions remain authoritative.
 2. Resolve the starting point and change slug. Do not recreate an artifact already supplied by reference.
 3. Use `$idea-task` only when the problem or intended outcome is still ambiguous.
 4. Use `$generate-bdr` before or alongside use-case discovery when an authoritative business choice is required. An accepted BDR may authorize or constrain multiple use cases.

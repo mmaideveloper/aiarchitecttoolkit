@@ -1,0 +1,133 @@
+{
+  "captured_utc": "2026-10-02T09:37:01.864561+00:00",
+  "sources": [
+    {
+      "path": "C:\\Projects\\aiarchitecttoolkit\\AGENTS.md",
+      "modified_utc": "2026-08-26T12:22:02.249703+00:00",
+      "sha256": "57a831a319dc955004489e3e3d5410c11f552b11b57a4a4cf374b98029d0acc4",
+      "scope": "Authoring reference; snapshot before edits. Not legal applicability evidence."
+    },
+    {
+      "path": "C:\\Projects\\aiarchitecttoolkit\\README.md",
+      "modified_utc": "2026-08-26T13:54:50.921638+00:00",
+      "sha256": "33def1c7e49239925b04ba2d9976a6b1610abc4e2cc3b9e1fe2cac8ae7a64cfc",
+      "scope": "Authoring reference; snapshot before edits. Not legal applicability evidence."
+    },
+    {
+      "path": "C:\\Projects\\aiarchitecttoolkit\\skills\\review-architecture-conformance\\SKILL.md",
+      "modified_utc": "2026-08-26T12:22:02.260150+00:00",
+      "sha256": "faf0672bbac83b010ea0582234ef74301881ee62f732b4a30231ff1ca5fd8a29",
+      "scope": "Authoring reference; snapshot before edits. Not legal applicability evidence."
+    },
+    {
+      "path": "C:\\Projects\\aiarchitecttoolkit\\skills\\security-review\\SKILL.md",
+      "modified_utc": "2026-08-26T12:22:02.310901+00:00",
+      "sha256": "9aa0f31af6b4a8a16176e6f4b79c2b664d30d0e8e15ad85d0b53e2f9b71b1622",
+      "scope": "Authoring reference; snapshot before edits. Not legal applicability evidence."
+    },
+    {
+      "path": "C:\\Projects\\aiarchitecttoolkit\\examples\\minimal_demo.py",
+      "modified_utc": "2026-08-26T13:53:44.705226+00:00",
+      "sha256": "43ce52aed9aef217315ca1914a590eb648a900eca0e1d9f20113f94eb817a225",
+      "scope": "Authoring reference; snapshot before edits. Not legal applicability evidence."
+    },
+    {
+      "path": "C:\\Projects\\aiarchitecttoolkit\\docs\\lifecycle.md",
+      "modified_utc": "2026-08-26T12:22:02.305903+00:00",
+      "sha256": "7b39438d2cec7885bd8d4af0c85e6abeb844b662dcdf0f30dfe5501900597794",
+      "scope": "Authoring reference; snapshot before edits. Not legal applicability evidence."
+    },
+    {
+      "path": "C:\\Projects\\aiarchitecttoolkit\\profiles\\healthcare.example.yaml",
+      "modified_utc": "2026-08-26T12:22:02.376717+00:00",
+      "sha256": "d07ddf4d196c9f5e456a37eeb7afb58e939546774727f1d4f65e2d0fcd157b69",
+      "scope": "Authoring reference; snapshot before edits. Not legal applicability evidence."
+    },
+    {
+      "path": "C:\\Projects\\aiarchitecttoolkit\\architecture\\index.md",
+      "modified_utc": "2026-08-26T13:41:29.153591+00:00",
+      "sha256": "9096d4778ab84086d097fb4baa8e58b6f2bbb1f74e6e2134a783255cf33b164b",
+      "scope": "Authoring reference; snapshot before edits. Not legal applicability evidence."
+    },
+    {
+      "path": "C:\\Projects\\aiarchitecttoolkit\\architecture\\decisions\\ADR-001-consume-toolkit-through-versioned-reusable-workflows.md",
+      "modified_utc": "2026-08-26T13:56:49.587807+00:00",
+      "sha256": "a71aeb8d65a854d6e99b8446d4448671bb385843773954a377bae68534ca3cf4",
+      "scope": "Authoring reference; snapshot before edits. Not legal applicability evidence."
+    },
+    {
+      "path": "C:\\Projects\\aiarchitecttoolkit\\scripts\\validate_architecture.py",
+      "modified_utc": "2026-08-26T12:22:02.251706+00:00",
+      "sha256": "a1926f681c07fd8edd2a301d681c1d11933fb92493859367c1e897a7a7b2aa05",
+      "scope": "Authoring reference; snapshot before edits. Not legal applicability evidence."
+    },
+    {
+      "path": "C:\\Projects\\aiarchitecttoolkit\\skills\\security-review\\agents\\openai.yaml",
+      "modified_utc": "2026-08-26T12:22:02.311902+00:00",
+      "sha256": "b3eeb04afa9d1bfa3ce8237061c7a67f2c2c41d56fa3807dd2bafa18e7b97182",
+      "scope": "Authoring reference; snapshot before edits. Not legal applicability evidence."
+    },
+    {
+      "path": "C:\\Projects\\___agel\\architecture\\sources\\ai-regulations-cz-sk\\index.html",
+      "modified_utc": "2026-10-02T08:56:22.359456+00:00",
+      "sha256": "e190d79db33d1e976eb6f5cc574f3838e6273ce34ea5be416cc5106e5a59ed32",
+      "scope": "Authoring reference; snapshot before edits. Not legal applicability evidence."
+    },
+    {
+      "path": "C:\\Users\\AGEL\\.codex\\skills\\.system\\skill-creator\\SKILL.md",
+      "modified_utc": "2026-10-02T09:36:56.486420+00:00",
+      "sha256": "cccd291077ec57c6f50ca6529f0f3fb93212da09473effb2fcec808e81b21288",
+      "scope": "Authoring reference; snapshot before edits. Not legal applicability evidence."
+    },
+    {
+      "path": "C:\\Users\\AGEL\\.codex\\skills\\.system\\skill-creator\\references\\openai_yaml.md",
+      "modified_utc": "2026-10-02T09:36:56.490941+00:00",
+      "sha256": "7039d465b05342cbacf861f08d20192ab1eeee112bc5d8ff0fb66234756887a9",
+      "scope": "Authoring reference; snapshot before edits. Not legal applicability evidence."
+    },
+    {
+      "path": "C:\\Users\\AGEL\\.codex\\skills\\.system\\skill-creator\\scripts\\quick_validate.py",
+      "modified_utc": "2026-10-02T09:36:56.491942+00:00",
+      "sha256": "6068513d924ed3559e186dfcdead7439129828dcf402167fd925c06dffbf2806",
+      "scope": "Authoring reference; snapshot before edits. Not legal applicability evidence."
+    }
+  ],
+  "web_checks": {
+    "date": "2026-10-02",
+    "urls": [
+      "https://eur-lex.europa.eu/eli/reg/2016/679/oj/eng",
+      "https://eur-lex.europa.eu/eli/reg/2024/1689/oj/eng",
+      "https://www.e-sbirka.cz/",
+      "https://www.slov-lex.sk/"
+    ],
+    "result": "Pages challenged or required JavaScript; no current provisions or dates verified."
+  },
+  "updates": [
+    {
+      "purpose": "Repeat-run parameter reuse requested by user",
+      "captured_utc": "2026-10-02T09:41:46.968197+00:00",
+      "sources": [
+        {
+          "path": "C:\\Projects\\aiarchitecttoolkit\\skills\\compliance-review\\SKILL.md",
+          "modified_utc": "2026-10-02T09:37:01.861063+00:00",
+          "sha256": "c93fcd587cd4e3ec10c6275578db99de0b091614bd6854d0fe498afcbbfad5d7"
+        },
+        {
+          "path": "C:\\Projects\\aiarchitecttoolkit\\skills\\compliance-review\\references\\review-method.md",
+          "modified_utc": "2026-10-02T09:37:01.861063+00:00",
+          "sha256": "9cf67ea0ebdc5f1c28b2d310187d8d3c65685778d2bfa4c7fb855e0379ff3587"
+        },
+        {
+          "path": "C:\\Projects\\aiarchitecttoolkit\\docs\\compliance-review.md",
+          "modified_utc": "2026-10-02T09:37:01.865896+00:00",
+          "sha256": "9509ce7732f19713c7ec881c3a3a38ab03c6a37318bb9af7ab5a7706e2107f74"
+        },
+        {
+          "path": "C:\\Projects\\aiarchitecttoolkit\\examples\\minimal_demo.py",
+          "modified_utc": "2026-10-02T09:37:01.867226+00:00",
+          "sha256": "2c604e9c986ad01d5399e4879bc6df6b60e19bdb971f6f5de802b805386678c0"
+        }
+      ]
+    }
+  ]
+}

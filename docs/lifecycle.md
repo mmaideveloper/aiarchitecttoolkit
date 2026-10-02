@@ -11,6 +11,7 @@
 | C4 and ADR | Evidence-backed views and independently changeable decisions | Binding decisions are accepted by an evidenced authority |
 | Task preparation | Small deliverable scope and verification | Acceptance is testable and safeguards are included |
 | Conformance review | Code, configuration, tests, deployment, and artifacts | Deviations are resolved or explicitly governed |
+| Compliance review | Business/jurisdiction intake, current obligations, internal policies, architecture and implementation evidence | Applicability uncertainty, gaps and expert decisions are explicit; review completion is not legal approval |
 | Security review | Threat model, control implementation, security tests, and operational evidence | Blocking findings are resolved or covered by an evidenced exception |
 | Azure review | Azure design, IaC/configuration, SLOs, operations, governance, and current platform guidance | Azure blockers and unverifiable platform assumptions are resolved |
 | AI solution final review | Complete release candidate and current specialist-review evidence | Accountable authority receives a `Ready`, `Ready with conditions`, or `Not ready` recommendation |
@@ -19,7 +20,7 @@
 
 Every artifact links upstream sources and known downstream consumers. A task should trace each binding requirement to verification evidence. A downstream artifact does not silently change an approved upstream artifact: update it through its lifecycle or create a superseding decision.
 
-Conformance, security, and applicable platform reviews remain independent evidence inputs. The final AI solution review synthesizes them and must not turn missing specialist evidence into an implicit pass.
+Conformance, compliance, security, and applicable platform reviews remain independent evidence inputs. The final AI solution review synthesizes them and must not turn missing specialist evidence into an implicit pass.
 
 ## BDR applicability
 
@@ -28,3 +29,5 @@ Create a BDR when an idea requires an authoritative business choice, such as bui
 ## Governance
 
 Read the repository's `AGENTS.md` and `architecture/toolkit-profile.yaml`. Treat missing applicability, classifications, owners, and approvals as `To verify` or `Unknown`. A profile configures the review; it is not evidence that every listed regulation applies to every change.
+
+Compliance discovery can start during use-case/design work and be revisited before release. See [review workflow](compliance-review.md). Saved compliance reviews reuse ACR identifiers and link requirements to the available lifecycle artifacts.
