@@ -1,0 +1,4 @@
+interface:
+  display_name: "Compliance Review"
+  short_description: "Assess architecture against applicable obligations"
+  default_prompt: "Use $compliance-review to clarify scope, identify applicable regulations and internal policies, and recommend evidence-backed architecture improvements with source links."

@@ -1,5 +1,7 @@
 # AI Architect Toolkit
 
+Current skill-set version: **1.0.2** (13 skills). See [release notes](CHANGELOG.md).
+
 A reusable set of Codex skills for software architects, with a focus on AI architecture. It turns stakeholder needs into traceable business and architecture documentation and implementation-ready tasks.
 
 ## Lifecycle
@@ -8,6 +10,7 @@ A reusable set of Codex skills for software architects, with a focus on AI archi
 Idea -> optional Business Decision Record -> Use case
      -> Architecture Design Document -> necessary C4 views and ADRs
      -> Implementation-ready task -> Implementation -> Conformance review
+                                             |-> Compliance review (when applicable)
                                              |-> Security review
                                              |-> Azure review (when applicable)
                                              `-> AI solution final review
@@ -27,6 +30,7 @@ The C4 capability supports system context, container, component, dynamic, deploy
 | `generate-adr` | `ADR-NNN` architecture decision record |
 | `prepare-task` | Implementation-ready task specification |
 | `review-architecture-conformance` | `ACR-NNN` or an in-chat review |
+| `compliance-review` | Applicability register and evidence-backed regulatory/internal-policy recommendations |
 | `security-review` | Threat-and-control security assessment |
 | `azure-review` | Azure architecture and operational-readiness assessment |
 | `ai-solution-final-review` | Final AI readiness recommendation and evidence ledger |
@@ -44,6 +48,8 @@ Copy the required complete folders from `skills/` into `<project>/skills/`, or c
 Examples for Jurisdigta, AGEL, and a project-neutral healthcare configuration are under `profiles/`. Document-type instructions can be selected through a profile and live under `profiles/instructions/`. They contain no secrets or environment-specific identifiers.
 
 See `docs/lifecycle.md` for gates and traceability, and `docs/adoption.md` for project adoption and customization boundaries. Project-specific adoption guides are available for [AGEL](docs/adoption-agel.md) and [Jurisdigta](docs/adoption-jurisdigta.md).
+
+See [Compliance review](docs/compliance-review.md) for intake, internal-policy discovery, and the [CZ/SK healthcare example](profiles/healthcare-cz-sk-compliance.example.md).
 
 ## Validate
 
